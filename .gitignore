@@ -127,3 +127,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Data
+/data
+.zip
+
+# for now
+gen_image.py
