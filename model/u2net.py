@@ -309,7 +309,7 @@ class RSU4F(tf.keras.layers.Layer):
 
 # U^2 net
 class U2NET(tf.keras.models.Model):
-    def __init__(self, out_channels):
+    def __init__(self, out_channels=1):
         super(U2NET, self).__init__()
 
         self.en1 = RSU7(32, 64)
