@@ -129,8 +129,10 @@ dmypy.json
 .pyre/
 
 # Data
+/weights/*
 /data
 .zip
 
 # for now
 gen_image.py
+.DS_Store
