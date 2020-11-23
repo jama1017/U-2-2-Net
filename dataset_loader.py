@@ -25,16 +25,16 @@ mask_dir = dataset_dir.joinpath('gt')
 # Evaluation
 output_dir = pathlib.Path('out')
 
-# def format_input(input_image):
-#     assert(input_image.size == default_in_shape[:2] or input_image.shape == default_in_shape)
-#     inp = np.array(input_image)
-#     if inp.shape[-1] == 4:
-#         input_image = input_image.convert('RGB')
-#     return np.expand_dims(np.array(input_image)/255., 0)
+def format_input(input_image):
+    assert(input_image.size == default_in_shape[:2] or input_image.shape == default_in_shape)
+    inp = np.array(input_image)
+    if inp.shape[-1] == 4:
+        input_image = input_image.convert('RGB')
+    return np.expand_dims(np.array(input_image)/255., 0)
 
 def download_and_extract_data():
     f = wget.download(dataset_url, out=str(root_data_dir.absolute()))
-
+    
     with zipfile.ZipFile(f, 'r') as zip_file:
         zip_file.extractall(root_data_dir)
 
@@ -71,5 +71,5 @@ def get_training_img_gt_batch(batch_size=12, in_shape=default_in_shape, out_shap
     
     imgs_batch  = np.stack([i[0]/255. for i in image_list])
     masks_batch = np.stack([i[1]/255. for i in image_list])
-    print(imgs_batch)
+    # print(imgs_batch)
     return (imgs_batch, masks_batch)
