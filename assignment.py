@@ -9,19 +9,19 @@ from tensorflow import keras
 from tensorflow.keras.layers import Input
 from model.u2net import *
 
-#Arguments
-parser = argparse.ArgumentParser(description='U22 Net')
-parser.add_argument('--resume', default=None, type=str)
-args = parser.parse_args()
-if args.resume:
-    resume = args.resume
-
 # Model
 resume = None
 weight_dir = pathlib.Path('weights').absolute()
 weights_file = weight_dir.joinpath('u2net.h5')
 default_in_shape = (320, 320, 3)
 default_out_shape = (320, 320, 1)
+
+#Arguments
+parser = argparse.ArgumentParser(description='U22 Net')
+parser.add_argument('--resume', default=None, type=str)
+args = parser.parse_args()
+if args.resume:
+    resume = args.resume
 
 # Training
 batch_size = 6
