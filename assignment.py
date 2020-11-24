@@ -24,7 +24,7 @@ if args.resume:
     resume = args.resume
 
 # Training
-batch_size = 6
+batch_size = 9
 epochs = 10000
 learning_rate = 0.001
 save_interval = 100
