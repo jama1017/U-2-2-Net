@@ -11,6 +11,10 @@ from PIL import Image
 
 cache = None
 
+# Model
+default_in_shape = (320, 320, 3)
+default_out_shape = (320, 320, 1)
+
 # Dataset 
 current_location = pathlib.Path(__file__).absolute().parents[0]
 root_data_dir = pathlib.Path('data')

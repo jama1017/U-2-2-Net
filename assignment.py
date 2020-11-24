@@ -27,7 +27,7 @@ default_out_shape = (320, 320, 1)
 batch_size = 12
 epochs = 10000
 learning_rate = 0.001
-save_interval = 1000
+save_interval = 100
 
 # Optimizer / Loss
 learning_rate = 1e-3
