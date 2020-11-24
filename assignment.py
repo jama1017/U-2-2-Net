@@ -24,7 +24,7 @@ default_in_shape = (320, 320, 3)
 default_out_shape = (320, 320, 1)
 
 # Training
-batch_size = 12
+batch_size = 6
 epochs = 10000
 learning_rate = 0.001
 save_interval = 100
