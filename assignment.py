@@ -8,6 +8,7 @@ from dataset_loader import *
 from tensorflow import keras
 from tensorflow.keras.layers import Input
 from model.u2net import *
+from datetime import datetime
 
 # Model
 resume = None
@@ -28,6 +29,7 @@ batch_size = 9
 epochs = 10000
 learning_rate = 0.001
 save_interval = 100
+log_file_path = './my_log.txt'
 
 # Optimizer / Loss
 learning_rate = 1e-3
@@ -58,6 +60,9 @@ def train():
     model.compile(optimizer=optimizer, loss=loss_function, metrics=None)
     model.summary()
 
+    with open(log_file_path, "a") as f:
+        f.write('\nTraining begins at: %s\n' % datetime.now())
+
     if resume:
         print('Loading weights from %s' % resume)
         model.load_weights(resume)
@@ -65,6 +70,8 @@ def train():
     # helper function to save state of model
     def save_weights():
         print('Saving state of model to %s' % weights_file)
+        with open(log_file_path, "a") as f:
+            f.write('\nSaving state of model to %s' % weights_file)
         model.save_weights(str(weights_file))
 
     # signal handler for early abortion to autosave model state
@@ -88,13 +95,20 @@ def train():
         except ValueError:
             continue
 
-        print('Training epoch {}'.format(e))
+        print('\nTraining epoch {} with loss {}'.format(e, loss))
+        with open(log_file_path, "a") as f:
+            f.write('\nTraining epoch {} with loss {}'.format(e, loss))
 
         if e % 10 == 0:
-            print('[%05d] Loss: %.4f' % (e, tf.reduce_sum(loss)))
+            print('[%05d] Loss: %.4f' % (e, loss))
+            with open(log_file_path, "a") as f:
+                f.write('\n[%05d] Loss: %.4f' % (e, loss))
 
         if save_interval and e > 0 and e % save_interval == 0:
             save_weights()
+        
+        with open(log_file_path, "a") as f:
+            f.write('\nCurrent time: %s\n' % datetime.now())
 
 
 if __name__ == "__main__":
