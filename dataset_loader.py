@@ -43,8 +43,8 @@ def get_image_gt_pair(img_name, img_resize=None, mask_resize=None):
     mask = Image.open(mask_img)
     
     # resize the image and mask to 320 * 320
-    img = img.resize(img_resize[:2], Image.BICUBIC)
-    mask = mask.resize(mask_resize[:2], Image.BICUBIC)
+    img = img.resize(img_resize[:2], Image.BILINEAR)
+    mask = mask.resize(mask_resize[:2], Image.BILINEAR)
     
     # randomly flip the image horizontally
     if bool(random.getrandbits(1)):
