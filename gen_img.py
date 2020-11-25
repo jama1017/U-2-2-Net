@@ -1,9 +1,42 @@
 import cv2
 import numpy as np
 import argparse
+import os
+from PIL import Image
 
 from dataset_loader import default_in_shape
 from model.u2net import U2NET
+import tensorflow as tf
+from tensorflow import keras
+from dataset_loader import *
+import pathlib
+
+#########################################################
+# Optimizer / Loss
+learning_rate = 1e-3
+optimizer = tf.keras.optimizers.Adam(
+    learning_rate=learning_rate, beta_1=.9, beta_2=.999, epsilon=1e-08)
+checkpoint = tf.keras.callbacks.ModelCheckpoint(
+    filepath='model.checkpoint', save_weights_only=True, verbose=1)
+loss_bce = tf.keras.losses.BinaryCrossentropy()
+
+
+def loss_function(y_true, y_pred):
+    y_pred = tf.expand_dims(y_pred, axis=-1)
+    loss0 = loss_bce(y_true, y_pred[0])
+    loss1 = loss_bce(y_true, y_pred[1])
+    loss2 = loss_bce(y_true, y_pred[2])
+    loss3 = loss_bce(y_true, y_pred[3])
+    loss4 = loss_bce(y_true, y_pred[4])
+    loss5 = loss_bce(y_true, y_pred[5])
+    loss6 = loss_bce(y_true, y_pred[6])
+
+    total_loss = loss0 + loss1 + loss2 + loss3 + loss4 + loss5 + loss6
+    return total_loss
+
+
+output_dir = pathlib.Path('out')
+#########################################################
 
 def str2bool(str):
     return str is not None and str.lower() in ("yes", "true", "t", "y", "1")
@@ -64,7 +97,7 @@ if args.apply_mask:
     apply_mask = args.apply_mask
 
 def format_input(image):
-    if np.array(image)[-1] == 4:
+    if np.array(image).shape[-1] == 4:
         image = image.convert('RGB')
     return np.expand_dims(np.array(image)/255., 0)
 
@@ -79,25 +112,26 @@ def main():
     network = U2NET()
     outputs = network(inputs)
     model = keras.Model(inputs=inputs, outputs=outputs, name='u2netmodel')
-    model.compile(optimizer=adam, loss=bce_loss, metrics=None)
+    model.compile(optimizer=optimizer, loss=loss_function, metrics=None)
 
     model.load_weights(weights)
     
     # evaluate each image
     for img in imgs:
-        i = Image.open(img).convert('RGB')
-        if i.size != default_in_shape:
-            i = i.resize(default_in_shape[:2], Image.BICUBIC)
+        ori_image = Image.open(img).convert('RGB')
+        i = ori_image
+        if ori_image.size != default_in_shape:
+            i = ori_image.resize(default_in_shape[:2], Image.BICUBIC)
         
         model_input = format_input(i)
         fused_mask = model(model_input, Image.BICUBIC)[0][0]
         output_mask = np.asarray(fused_mask)
         
         if i.size != default_in_shape:
-            output_mask = cv2.resize(output_mask, dsize=i.size)
+            output_mask = cv2.resize(output_mask, dsize=ori_image.size)
         
         output_mask = np.tile(np.expand_dims(output_mask, axis=2), [1, 1, 3])
-        output_img = np.expand_dims(np.array(i)/255., 0)[0]
+        output_img = np.expand_dims(np.array(ori_image)/255., 0)[0]
 
         if apply_mask:
             output_img = apply_mask(output_img, output_mask)
@@ -108,8 +142,8 @@ def main():
             output_img = np.concatenate((output_mask, output_img), axis=1)
 
         output_img = cv2.cvtColor(output_img.astype('float32'), cv2.COLOR_BGR2RGB) * 255.
-        output_dir = output_dir.joinpath(pathlib.Path(img).name)
-        cv2.imwrite(str(output_dir), output_img)
+        out_dir = output_dir.joinpath(pathlib.Path(img).name)
+        cv2.imwrite(str(out_dir), output_img)
         
 if __name__=='__main__':
     main()
