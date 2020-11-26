@@ -19,9 +19,17 @@ default_out_shape = (320, 320, 1)
 current_location = pathlib.Path(__file__).absolute().parents[0]
 root_data_dir = pathlib.Path('data')
 dataset_url = "https://drive.google.com/u/0/uc?export=download&confirm=txWv&id=1BmqQiSYJGchWzNoauBDrXHl5p1Sb2MmE"
-dataset_dir = root_data_dir.joinpath('HKU-IS')
-image_dir = dataset_dir.joinpath('imgs')
-mask_dir = dataset_dir.joinpath('gt')
+
+# HKU-IS
+# dataset_dir = root_data_dir.joinpath('HKU-IS')
+# image_dir = dataset_dir.joinpath('imgs')
+# mask_dir = dataset_dir.joinpath('gt')
+
+# DUTS-TR
+dataset_dir = root_data_dir.joinpath('DUTS-TR')
+image_dir = dataset_dir.joinpath('DUTS-TR-Image')
+mask_dir = dataset_dir.joinpath('DUTS-TR-Mask')
+
 
 # Evaluation
 output_dir = pathlib.Path('out')
