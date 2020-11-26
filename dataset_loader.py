@@ -42,7 +42,8 @@ def download_and_extract_data():
 
 def get_image_gt_pair(img_name, img_resize=None, mask_resize=None):
     in_img = image_dir.joinpath(img_name)
-    mask_img = mask_dir.joinpath(img_name)
+    # mask_img = mask_dir.joinpath(img_name)
+    mask_img = mask_dir.joinpath(img_name.replace('jpg', 'png')) # needed for DUTS-TR Dataset
 
     if not in_img.exists() or not mask_img.exists():
         return None
