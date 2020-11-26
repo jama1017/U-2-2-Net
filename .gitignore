@@ -135,5 +135,7 @@ dmypy.json
 
 # for now
 gen_image.py
+
 .DS_Store
 my_log.txt
+nohup.out
