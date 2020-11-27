@@ -132,6 +132,7 @@ dmypy.json
 /weights/*
 /data
 .zip
+/anim
 
 # for now
 gen_image.py

@@ -55,6 +55,8 @@ parser.add_argument('--merged', default=False, type=str2bool,
                     help='display input image and output mask side-by-side')
 parser.add_argument('--apply_mask', default=False, type=str2bool,
                     help='apply the mask to the input image and show in place of the mask')
+parser.add_argument('--include_original', default=False, type=str2bool,
+                    help='include the original input image in the final output along with merged')
 args = parser.parse_args()
 
 imgs = []
@@ -95,6 +97,10 @@ if args.merged:
 apply_mask = None
 if args.apply_mask:
     apply_mask = args.apply_mask
+
+include_original = None
+if args.include_original:
+    include_original = args.include_original
 
 def format_input(image):
     if np.array(image).shape[-1] == 4:
@@ -138,8 +144,12 @@ def main():
         else:
             output_img = output_mask
 
-        if merged:
+        if merged and not include_original:
             output_img = np.concatenate((output_mask, output_img), axis=1)
+
+        if merged and include_original:
+            original_image = np.expand_dims(np.array(ori_image)/255., 0)[0]
+            output_img = np.concatenate((original_image, output_mask, output_img), axis=1)
 
         output_img = cv2.cvtColor(output_img.astype('float32'), cv2.COLOR_BGR2RGB) * 255.
         out_dir = output_dir.joinpath(pathlib.Path(img).name)
