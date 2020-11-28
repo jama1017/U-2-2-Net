@@ -107,7 +107,7 @@ def format_input(image):
         image = image.convert('RGB')
     return np.expand_dims(np.array(image)/255., 0)
 
-def apply_mask(img, mask):
+def apply_mask_to_image(img, mask):
     return np.multiply(img, mask)
 
 def main():    
@@ -140,7 +140,7 @@ def main():
         output_img = np.expand_dims(np.array(ori_image)/255., 0)[0]
 
         if apply_mask:
-            output_img = apply_mask(output_img, output_mask)
+            output_img = apply_mask_to_image(output_img, output_mask)
         else:
             output_img = output_mask
 
