@@ -68,7 +68,7 @@ if args.image:
         imgs.append(args.image)
 
 if args.image_dir:
-    image_dir = pahtlib.Path(args.image_dir)
+    image_dir = pathlib.Path(args.image_dir)
     if not image_dir.exists():
         print("Input image directory does not exist: {}".format(image_dir))
     else:
