@@ -127,10 +127,10 @@ def main():
         ori_image = Image.open(img).convert('RGB')
         i = ori_image
         if ori_image.size != default_in_shape:
-            i = ori_image.resize(default_in_shape[:2], Image.BICUBIC)
+            i = ori_image.resize(default_in_shape[:2], Image.BILINEAR)
         
         model_input = format_input(i)
-        fused_mask = model(model_input, Image.BICUBIC)[0][0]
+        fused_mask = model(model_input, Image.BILINEAR)[0][0]
         output_mask = np.asarray(fused_mask)
         
         if i.size != default_in_shape:
