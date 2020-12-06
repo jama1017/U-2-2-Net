@@ -140,3 +140,5 @@ gen_image.py
 .DS_Store
 my_log.txt
 nohup.out
+
+/out/DUTS-TE-our-gcp-all
