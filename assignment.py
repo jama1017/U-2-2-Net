@@ -32,7 +32,9 @@ save_interval = 100
 log_file_path = './my_log.txt'
 
 # Optimizer / Loss
+# try scheduling learning rate (initially large and gradually decrease)
 learning_rate = 1e-3
+# try different beta values
 optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate, beta_1=.9, beta_2=.999, epsilon=1e-08) 
 checkpoint = tf.keras.callbacks.ModelCheckpoint(filepath='model.checkpoint', save_weights_only=True, verbose=1)
 loss_bce = tf.keras.losses.BinaryCrossentropy()
@@ -48,6 +50,7 @@ def loss_function(y_true, y_pred):
     loss5 = loss_bce(y_true, y_pred[5])
     loss6 = loss_bce(y_true, y_pred[6])
 
+    # try weighting loss differently
     total_loss = loss0 + loss1 + loss2 + loss3 + loss4 + loss5 + loss6
     return total_loss
 

@@ -45,6 +45,7 @@ class RSU7(tf.keras.layers.Layer):
         self.encoder7 = ConvBlock(mid_channels, 2)
 
         self.decoder6 = ConvBlock(mid_channels, 1)
+        # try bicubic
         self.upsample6 = UpSampling2D(size=(2,2), interpolation='bilinear')
 
         self.decoder5 = ConvBlock(mid_channels, 1)
@@ -407,6 +408,7 @@ class U2NET(tf.keras.models.Model):
 
         saliency_fused = self.out_conv(tf.concat([side1, side2, side3, side4, side5, side6], axis=3))
 
+        # try different activations functions (derivative of sigmoid - sigmoid*(1-sigmoid))
         output = tf.stack([self.sigmoid(saliency_fused), self.sigmoid(side1), self.sigmoid(side2), self.sigmoid(side3), self.sigmoid(side4), self.sigmoid(side5), self.sigmoid(side6)])
 
         return output
