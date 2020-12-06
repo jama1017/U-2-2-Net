@@ -19,9 +19,17 @@ default_out_shape = (320, 320, 1)
 current_location = pathlib.Path(__file__).absolute().parents[0]
 root_data_dir = pathlib.Path('data')
 dataset_url = "https://drive.google.com/u/0/uc?export=download&confirm=txWv&id=1BmqQiSYJGchWzNoauBDrXHl5p1Sb2MmE"
-dataset_dir = root_data_dir.joinpath('HKU-IS')
-image_dir = dataset_dir.joinpath('imgs')
-mask_dir = dataset_dir.joinpath('gt')
+
+# HKU-IS
+# dataset_dir = root_data_dir.joinpath('HKU-IS')
+# image_dir = dataset_dir.joinpath('imgs')
+# mask_dir = dataset_dir.joinpath('gt')
+
+# DUTS-TR
+dataset_dir = root_data_dir.joinpath('DUTS-TR')
+image_dir = dataset_dir.joinpath('DUTS-TR-Image')
+mask_dir = dataset_dir.joinpath('DUTS-TR-Mask')
+
 
 # Evaluation
 output_dir = pathlib.Path('out')
@@ -34,7 +42,8 @@ def download_and_extract_data():
 
 def get_image_gt_pair(img_name, img_resize=None, mask_resize=None):
     in_img = image_dir.joinpath(img_name)
-    mask_img = mask_dir.joinpath(img_name)
+    # mask_img = mask_dir.joinpath(img_name)
+    mask_img = mask_dir.joinpath(img_name.replace('jpg', 'png')) # needed for DUTS-TR Dataset
 
     if not in_img.exists() or not mask_img.exists():
         return None
@@ -43,8 +52,8 @@ def get_image_gt_pair(img_name, img_resize=None, mask_resize=None):
     mask = Image.open(mask_img)
     
     # resize the image and mask to 320 * 320
-    img = img.resize(img_resize[:2], Image.BICUBIC)
-    mask = mask.resize(mask_resize[:2], Image.BICUBIC)
+    img = img.resize(img_resize[:2], Image.BILINEAR)
+    mask = mask.resize(mask_resize[:2], Image.BILINEAR)
     
     # randomly flip the image horizontally
     if bool(random.getrandbits(1)):

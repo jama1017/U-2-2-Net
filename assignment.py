@@ -26,7 +26,7 @@ if args.resume:
 
 # Training
 batch_size = 9
-epochs = 10000
+epochs = 40000
 learning_rate = 0.001
 save_interval = 100
 log_file_path = './my_log.txt'
