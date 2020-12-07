@@ -1,12 +1,9 @@
-import tensorflow as tf
-import matplotlib.pyplot as plt
 import argparse
 import pathlib
 import signal
 
-from dataset_loader import *
 from tensorflow import keras
-from tensorflow.keras.layers import Input
+from dataset_loader import *
 from model.u2net import *
 from datetime import datetime
 
@@ -31,35 +28,11 @@ learning_rate = 0.001
 save_interval = 100
 log_file_path = './my_log.txt'
 
-# Optimizer / Loss
-# try scheduling learning rate (initially large and gradually decrease)
-learning_rate = 1e-3
-# try different beta values
-optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate, beta_1=.9, beta_2=.999, epsilon=1e-08) 
-checkpoint = tf.keras.callbacks.ModelCheckpoint(filepath='model.checkpoint', save_weights_only=True, verbose=1)
-loss_bce = tf.keras.losses.BinaryCrossentropy()
-
-
-def loss_function(y_true, y_pred):
-    y_pred = tf.expand_dims(y_pred, axis=-1)
-    loss0 = loss_bce(y_true, y_pred[0])
-    loss1 = loss_bce(y_true, y_pred[1])
-    loss2 = loss_bce(y_true, y_pred[2])
-    loss3 = loss_bce(y_true, y_pred[3])
-    loss4 = loss_bce(y_true, y_pred[4])
-    loss5 = loss_bce(y_true, y_pred[5])
-    loss6 = loss_bce(y_true, y_pred[6])
-
-    # try weighting loss differently
-    total_loss = loss0 + loss1 + loss2 + loss3 + loss4 + loss5 + loss6
-    return total_loss
-
-
 def train():
     inputs = keras.Input(shape=default_in_shape)
     u2net = U2NET()
-    out = u2net(inputs)
-    model = keras.Model(inputs=inputs, outputs=out, name='u2netmodel')
+    outputs = u2net(inputs)
+    model = keras.Model(inputs=inputs, outputs=outputs, name='u2netmodel')
     model.compile(optimizer=optimizer, loss=loss_function, metrics=None)
     model.summary()
 
@@ -90,8 +63,8 @@ def train():
     print('--- Start Training ---')
     for e in range(epochs):
         try:
-            feed, out = get_training_img_gt_batch(batch_size=batch_size)
-            loss = model.train_on_batch(feed, out)
+            inputs, masks = get_training_img_gt_batch(batch_size=batch_size)
+            loss = model.train_on_batch(inputs, masks)
         except KeyboardInterrupt:
             save_weights()
             return
@@ -112,7 +85,6 @@ def train():
         
         with open(log_file_path, "a") as f:
             f.write('\nCurrent time: %s\n' % datetime.now())
-
 
 if __name__ == "__main__":
     train()

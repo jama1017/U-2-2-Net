@@ -4,8 +4,6 @@ import random
 import numpy as np
 import wget
 import zipfile
-import glob
-# import patoolib
 
 from PIL import Image 
 

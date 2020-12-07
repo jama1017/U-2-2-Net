@@ -4,39 +4,10 @@ import argparse
 import os
 from PIL import Image
 
-from dataset_loader import default_in_shape
-from model.u2net import U2NET
-import tensorflow as tf
 from tensorflow import keras
 from dataset_loader import *
+from model.u2net import *
 import pathlib
-
-#########################################################
-# Optimizer / Loss
-learning_rate = 1e-3
-optimizer = tf.keras.optimizers.Adam(
-    learning_rate=learning_rate, beta_1=.9, beta_2=.999, epsilon=1e-08)
-checkpoint = tf.keras.callbacks.ModelCheckpoint(
-    filepath='model.checkpoint', save_weights_only=True, verbose=1)
-loss_bce = tf.keras.losses.BinaryCrossentropy()
-
-
-def loss_function(y_true, y_pred):
-    y_pred = tf.expand_dims(y_pred, axis=-1)
-    loss0 = loss_bce(y_true, y_pred[0])
-    loss1 = loss_bce(y_true, y_pred[1])
-    loss2 = loss_bce(y_true, y_pred[2])
-    loss3 = loss_bce(y_true, y_pred[3])
-    loss4 = loss_bce(y_true, y_pred[4])
-    loss5 = loss_bce(y_true, y_pred[5])
-    loss6 = loss_bce(y_true, y_pred[6])
-
-    total_loss = loss0 + loss1 + loss2 + loss3 + loss4 + loss5 + loss6
-    return total_loss
-
-
-output_dir = pathlib.Path('out')
-#########################################################
 
 def str2bool(str):
     return str is not None and str.lower() in ("yes", "true", "t", "y", "1")
@@ -78,6 +49,7 @@ if args.image_dir:
         else:
             imgs.extend(images)
     
+output_dir = pathlib.Path('out')
 if args.output_dir:
     output_dir = pathlib.Path(args.output_dir)
     if not output_dir.exists():
@@ -107,9 +79,6 @@ def format_input(image):
         image = image.convert('RGB')
     return np.expand_dims(np.array(image)/255., 0)
 
-def apply_mask_to_image(img, mask):
-    return np.multiply(img, mask)
-
 def main():    
     if len(imgs) == 0 or weights == "":
         return
@@ -127,22 +96,19 @@ def main():
         ori_image = Image.open(img).convert('RGB')
         i = ori_image
         if ori_image.size != default_in_shape:
-            i = ori_image.resize(default_in_shape[:2], Image.BILINEAR)
+            i = cv2.resize(np.array(ori_image), default_in_shape[:2]) # default bilinear interpolation
         
         model_input = format_input(i)
         fused_mask = model(model_input, Image.BILINEAR)[0][0]
-        output_mask = np.asarray(fused_mask)
+        output_mask = np.array(fused_mask)
         
         if i.size != default_in_shape:
-            output_mask = cv2.resize(output_mask, dsize=ori_image.size)
+            output_mask = cv2.resize(output_mask, ori_image.size) # default bilinear interpolation
         
         output_mask = np.tile(np.expand_dims(output_mask, axis=2), [1, 1, 3])
         output_img = np.expand_dims(np.array(ori_image)/255., 0)[0]
 
-        if apply_mask:
-            output_img = apply_mask_to_image(output_img, output_mask)
-        else:
-            output_img = output_mask
+        output_img = np.multiply(output_img, output_mask) if apply_mask else output_mask
 
         if merged and not include_original:
             output_img = np.concatenate((output_mask, output_img), axis=1)

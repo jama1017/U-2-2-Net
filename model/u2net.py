@@ -3,6 +3,34 @@ import numpy as np
 
 from tensorflow.keras.layers import Conv2D, BatchNormalization, ReLU, MaxPool2D, UpSampling2D
 
+
+#########################################################
+# Optimizer / Loss
+
+def loss_function(y_true, y_pred):
+    y_pred = tf.expand_dims(y_pred, axis=-1)
+    loss0 = loss_bce(y_true, y_pred[0])
+    loss1 = loss_bce(y_true, y_pred[1])
+    loss2 = loss_bce(y_true, y_pred[2])
+    loss3 = loss_bce(y_true, y_pred[3])
+    loss4 = loss_bce(y_true, y_pred[4])
+    loss5 = loss_bce(y_true, y_pred[5])
+    loss6 = loss_bce(y_true, y_pred[6])
+
+    # try weighting loss differently
+    total_loss = loss0 + loss1 + loss2 + loss3 + loss4 + loss5 + loss6
+    return total_loss
+
+learning_rate = 1e-3
+optimizer = tf.keras.optimizers.Adam(
+    learning_rate=learning_rate, beta_1=.9, beta_2=.999, epsilon=1e-08)
+checkpoint = tf.keras.callbacks.ModelCheckpoint(
+    filepath='model.checkpoint', save_weights_only=True, verbose=1)
+loss_bce = tf.keras.losses.BinaryCrossentropy()
+
+#########################################################
+
+
 # convolution block
 class ConvBlock(tf.keras.layers.Layer):
     def __init__(self, out_channels, dilation_rate):
