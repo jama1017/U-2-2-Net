@@ -49,7 +49,8 @@ def evaluation():
     num_images = len(gt_masks)
     assert num_images == len(u2_output_masks)
     assert num_images == len(output_masks)
-
+    
+    # for each threshold
     for thres in thresholds:
         cur_precision = 0
         cur_recall = 0
@@ -57,7 +58,7 @@ def evaluation():
         cur_recall_2 = 0
         invalid_images_ours = 0
         invalid_images_u2 = 0
-        print(thres)
+        # for each image
         for i in range(num_images):
             output_mask = np.array(Image.open(output_masks[i]).convert("L"))/255
             paper_output_mask = np.array(Image.open(u2_output_masks[i]).convert("L"))/255
@@ -106,7 +107,8 @@ def evaluation():
     plt.xlabel("Recall")
     plt.ylabel("Precision")
     plt.show()
-
+    
+    # calculate Max F measures
     precisions = np.array(precisions)
     recalls = np.array(recalls)
     precisions_u2 = np.array(precisions_u2)
