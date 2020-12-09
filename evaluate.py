@@ -40,7 +40,7 @@ def evaluation():
     else:
         u2_output_masks.extend(u2_m)
     
-    # Precision-Recall and F measure
+    #Precision-Recall
     thresholds = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]
     precisions = []
     recalls = []
@@ -49,7 +49,7 @@ def evaluation():
     num_images = len(gt_masks)
     assert num_images == len(u2_output_masks)
     assert num_images == len(output_masks)
-    
+
     # for each threshold
     for thres in thresholds:
         cur_precision = 0
@@ -58,7 +58,8 @@ def evaluation():
         cur_recall_2 = 0
         invalid_images_ours = 0
         invalid_images_u2 = 0
-        # for each image
+        print(thres)
+        # for every masks in the DUTS-TE
         for i in range(num_images):
             output_mask = np.array(Image.open(output_masks[i]).convert("L"))/255
             paper_output_mask = np.array(Image.open(u2_output_masks[i]).convert("L"))/255
@@ -106,9 +107,9 @@ def evaluation():
     plt.axis([0.5,1,0.5,1])
     plt.xlabel("Recall")
     plt.ylabel("Precision")
-    plt.show()
-    
-    # calculate Max F measures
+    plt.savefig('PR_curve.pdf')  
+
+    # F-measure and Max F calculation
     precisions = np.array(precisions)
     recalls = np.array(recalls)
     precisions_u2 = np.array(precisions_u2)
