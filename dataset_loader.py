@@ -28,15 +28,7 @@ dataset_dir = root_data_dir.joinpath('DUTS-TR')
 image_dir = dataset_dir.joinpath('DUTS-TR-Image')
 mask_dir = dataset_dir.joinpath('DUTS-TR-Mask')
 
-
-# Evaluation
 output_dir = pathlib.Path('out')
-
-def download_and_extract_data():
-    f = wget.download(dataset_url, out=str(root_data_dir.absolute()))
-    
-    with zipfile.ZipFile(f, 'r') as zip_file:
-        zip_file.extractall(root_data_dir)
 
 def get_image_gt_pair(img_name, img_resize=None, mask_resize=None):
     in_img = image_dir.joinpath(img_name)
